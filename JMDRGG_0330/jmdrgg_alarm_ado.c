@@ -1,12 +1,11 @@
 #include <sys/types.h>
 #include <signal.h>
 
-main(int argc, char **argv)
+void main(int argc, char **argv)
 {
 	int pid;
 
-	if (argc < 1)
-	{
+	if (argc < 1) {
 		perror(" Nincs kinek");
 		exit(1);
 	}
