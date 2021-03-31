@@ -1,6 +1,10 @@
 #include <sys/types.h>
 #include <signal.h>
 
+/*
+Az átadott process id-t tároljuk, madj megszüntetük egy SIGALRM signállal
+*/
+
 void main(int argc, char **argv) {
 	int pid;
 
