@@ -1,8 +1,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
-void main(int argc, char **argv)
-{
+void main(int argc, char **argv) {
 	int pid;
 
 	if (argc < 1) {
