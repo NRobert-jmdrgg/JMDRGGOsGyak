@@ -1,13 +1,19 @@
 #include <unistd.h>
 #include <signal.h>
+#include <stdio.h>
 
 void do_nothing();
 
 void main () {
+	printf("  varok de meddig?\n");
+	
 	signal(SIGALRM, do_nothing);
-	printf("  %d varok de meddig?\n");
+	
 	pause();
+
     printf("  Vegre, itt az alarm \n");
 }
 
-void do_nothing(){ ;}
+void do_nothing() { 
+	;
+}
