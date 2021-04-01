@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
-int countSigInt = 0;
 
+int countSigInt = 0;
 
 void sigIntHandler(int s) {
     if (s == SIGINT) {
@@ -35,7 +35,6 @@ void handleSignals() {
         sleep(1);
     }
 }
-
 
 void main() {
    handleSignals();
