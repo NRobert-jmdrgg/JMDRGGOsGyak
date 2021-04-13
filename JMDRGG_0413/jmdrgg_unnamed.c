@@ -15,7 +15,7 @@ int main(void) {
     char    string[] = "XY jmdrgg\n";
     char    readbuffer[80];
     int     fd[2];
-    
+    pipe(fd);
     if((childpid = fork()) == -1) {
             perror("fork");
             exit(1);
@@ -26,10 +26,10 @@ int main(void) {
         write(fd[1], string, (strlen(string)+1));
         exit(0);
     } else {      
-        pipe(fd);
+        
         close(fd[1]);
         nbytes = read(fd[0], readbuffer, sizeof(readbuffer));
-        printf("Received string: %s", readbuffer);
+        printf("kapott string: %s", readbuffer);
     }
     
     return(0);

@@ -1,15 +1,40 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-int main(void) {
-    int f = mkfifo("szerverfifo", S_IFIFO|0666);
-    if (f == -1) {
-        perror("Nem jott letre a nevesitett pipe");
+#define FN "jmdrgg"
+
+void main() {
+    int nbytes;
+    pid_t childpid;
+    char string[] = "Nagy Robert\n";
+    char readbuffer[80];
+    
+    //nevesitett csovezetek FN neven chmod 666 jogosultsaggal
+    mkfifo(FN, S_IFIFO | 0666);    
+
+
+
+    if ((childpid = fork()) == -1) {
+            perror("fork hiba");
+            exit(1);
     }
-    return(0);
+
+    if (childpid == 0) {
+        int fd = open(FN, O_WRONLY);
+        write(fd, string, sizeof(string));
+        close(fd);
+        unlink(FN);
+    } else {      
+        int fd2 = open(FN, O_RDONLY);
+        nbytes = read(fd2, &readbuffer, sizeof(readbuffer));
+        close(fd2);
+        unlink(FN);
+        printf("%s", readbuffer);
+    }
+    //ha mindenki unlinkeli akkor megszunik a file   
 }
