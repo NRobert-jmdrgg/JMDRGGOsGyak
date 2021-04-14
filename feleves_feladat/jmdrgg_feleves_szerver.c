@@ -5,6 +5,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <stdbool.h>
+
+#define CSONEV "jmdrgg_pipe"
 
 /*
     6. Irjon C nyelvu programokat, ami
@@ -19,7 +23,32 @@
     Hatarido : maj 11.
 */
 
+void olvasMajdVisszair(int);
+
+int val = 0;
+
 int main(int argc, char const *argv[]) {
+    int pipe = mkfifo(CSONEV, S_IFIFO | 0666);
+    int fd = open(CSONEV, O_RDWR);
     
+    olvasMajdVisszair(fd);
+    
+    printf("\nbefejezve\n");
+
+    unlink(CSONEV);
     return 0;
+}
+
+void olvasMajdVisszair(int fd) {
+    bool irva = false;
+    do {
+        printf("szerver olvas..\n");
+        read(fd, &val, sizeof(val));
+        printf("szerver megkapta : %d \n", val);
+        val *= 2;
+        if (write(fd, &val, sizeof(val)) != 0) {
+            irva = true;
+        }
+    } while (irva == false);
+    close(fd);
 }
