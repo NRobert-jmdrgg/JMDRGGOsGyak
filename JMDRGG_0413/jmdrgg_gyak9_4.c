@@ -5,10 +5,10 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
 void sigtermKezelo() ;
 
 void main(int argc, char const *argv[]) {
-    printf("Ezt a processzt csak sigkillel lehet leloni\n");
     if (argc < 1) {
         perror("nincs argumentum");
         exit(-1);

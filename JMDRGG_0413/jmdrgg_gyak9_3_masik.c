@@ -11,11 +11,11 @@ void main() {
     printf("A program pidje : %d\n",getpid());
     signal(SIGALRM, handleSigalarm);
     pause();
-    printf("kibillent");
+    printf("kibillent\n");
     exit(0);
 }
 
 void handleSigalarm() {
-    printf("\njmdrgg");
+    printf("jmdrgg\n");
     
 }

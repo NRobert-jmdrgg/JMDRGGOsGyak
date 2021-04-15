@@ -7,11 +7,11 @@
 
 void main(int argc, char const *argv[]) {
     if (argc < 1) {
-        perror("nincs argumentum");
+        perror("nincs argumentum\n");
         exit(-1);
     }
     pid_t pid = atoi(argv[1]);
     if (kill(pid, SIGALRM) == -1) {
-        perror("sikertelen signalozas");
+        perror("sikertelen signalozas\n");
     }
 }
