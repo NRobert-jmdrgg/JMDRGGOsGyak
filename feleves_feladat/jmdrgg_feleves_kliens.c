@@ -2,14 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <stdbool.h>
 
-#define CSONEV "jmdrgg_pipe"
+#define CSONEV "FIFO"
 
 /*
     6. Irjon C nyelvu programokat, ami
@@ -28,45 +23,44 @@ int getRandom(void);
 void kliensIr(int fd);
 void kliensOlvas(int fd);
 
-int main(int argc, char const *argv[]) {
+void main() {
     srand(time(0));
-    //execlp("./jmdrgg_feleves", "jmdrgg_feleves", (char *)NULL);
-    int fd = open(CSONEV, O_RDWR);
-    printf("kliens indul...\n");
-
-    kliensIr(fd);
-
-    kliensOlvas(fd);
-
-    close(fd);   
     
+    int fd = open(CSONEV, O_RDWR);
+    if (fd == -1) {
+        perror("Szerver : nem sikerult megnyitni \n");
+        exit(-1);
+    }
+    
+    printf("kliens indul...\n");
+    kliensIr(fd);
+    kliensOlvas(fd);
+    close(fd);   
     unlink(CSONEV);
     
-    return 0;
 }
 
 void kliensIr(int fd) {
     int n = getRandom();
     if (write(fd, &n, sizeof(int)) == -1) {
         perror("kliens : Nem sikerult irni\n");
-    } else {
-        printf("kliens : irva\n");
-    }
+        exit(-1);
+    } 
+    printf("kliens : irva\n");
+    
 }
 
-void kliensOlvas(int fd) {
-    bool olvasott = false;
+void kliensOlvas(int fd) {    
     int val;
-    do {
-        printf("kliens olvas...\n");
-        if (read(fd, &val, sizeof(val)) > 0) {
-            olvasott = true;
-        }
-    } while (olvasott == false);
+    printf("kliens olvas...\n");
+    if (read(fd, &val, sizeof(val)) < 0) {
+        perror("kliens : Nem sikerult olvasni\n");
+        exit(-1);
+    }
     printf("\nkliens kapott ertek : %d\n", val);
 }
 
 int getRandom() {
-    return rand() % 10 + 1;
+    return (rand() % 10) + 1;
 }
 
