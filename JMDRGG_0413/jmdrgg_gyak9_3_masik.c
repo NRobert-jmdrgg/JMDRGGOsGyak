@@ -16,6 +16,6 @@ void main() {
 }
 
 void handleSigalarm() {
-    printf("jmdrgg");
-    exit(1);
+    printf("\njmdrgg");
+    
 }
