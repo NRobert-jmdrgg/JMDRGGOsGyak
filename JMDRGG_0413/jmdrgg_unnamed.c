@@ -11,14 +11,15 @@ ezt kiolvassa, és kiírja a standard kimenetre.
 
 int main(void) {
     int nbytes;
-    pid_t   childpid;
-    char    string[] = "XY jmdrgg\n";
-    char    readbuffer[80];
-    int     fd[2];
+    pid_t childpid;
+    char string[] = "XY jmdrgg\n";
+    char readbuffer[80];
+    int fd[2];
     pipe(fd);
+    
     if((childpid = fork()) == -1) {
-            perror("fork");
-            exit(1);
+        perror("fork");
+        exit(1);
     }
 
     if(childpid == 0) {
@@ -26,7 +27,6 @@ int main(void) {
         write(fd[1], string, (strlen(string)+1));
         exit(0);
     } else {      
-        
         close(fd[1]);
         nbytes = read(fd[0], readbuffer, sizeof(readbuffer));
         printf("kapott string: %s", readbuffer);

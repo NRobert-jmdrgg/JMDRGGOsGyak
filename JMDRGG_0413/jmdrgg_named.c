@@ -17,8 +17,6 @@ void main() {
     //nevesitett csovezetek FN neven chmod 666 jogosultsaggal
     mkfifo(FN, S_IFIFO | 0666);    
 
-
-
     if ((childpid = fork()) == -1) {
             perror("fork hiba");
             exit(1);
