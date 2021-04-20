@@ -24,6 +24,7 @@ void olvasMajdVisszair(int);
 
 void main() {
     int pipe;
+    //megnezi, hogy nincs fifo, ennek normalis mukodeskor teljesulnie kell. Ha mar van akkor nem hoz letre ujjat.
     if (access(CSONEV, F_OK)) {
         pipe = mkfifo(CSONEV, S_IFIFO | 0666);
     }    
