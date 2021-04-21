@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 
@@ -10,7 +11,7 @@
 
 typedef struct msgbuf {
     long mtype;
-    char *mtext[128];
+    char mtext[128];
 } messageBuffer;
 
 void main() {
@@ -30,9 +31,11 @@ void main() {
             perror("Nem sikerult letrehozni\n");
             exit(-1);
         }
+
         int messageReturn;
         int messageLen;
         char *messages[] = {"elso uzenet", "masodik uzenet", "harmadik uzenet"};
+
         for (int i = 0; i < 3; i++) {
             strcpy(messagePointer->mtext, messages[i]);
             messageLen = strlen(messagePointer->mtext) + 1;
@@ -63,6 +66,12 @@ void main() {
 
         if (messageID == -1) {
             perror("Nem sikerult letrehozni\n");
+            exit(-1);
+        }
+
+        messageReturn = msgctl(messageID, IPC_STAT, buffer);
+        if (messageReturn == -1) {
+            perror("Nem sikerult megkapni az uzenetet\n");
             exit(-1);
         }
 
