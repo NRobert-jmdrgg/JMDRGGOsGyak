@@ -86,5 +86,11 @@ void main() {
         }
     }
 
+    int messageID = msgget(key, IPC_CREAT | 0666);
+    int messageReturn = msgctl(messageID, IPC_RMID, NULL);
+    if (messageID == -1) {
+        perror("Nem sikerult kitorolni \n");
+        exit(-1);
+    }
     
 }
