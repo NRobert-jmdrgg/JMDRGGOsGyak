@@ -7,9 +7,9 @@
 #include <string.h>
 #include <errno.h>
 
-#define KEY 777
+#define KEY 777777L
 
-typedef struct msgbuf {
+typedef struct msgbuf1 {
     long mtype;
     char mtext[128];
 } messageBuffer;
@@ -20,77 +20,61 @@ void main() {
 
     childPid = fork();
     if (childPid == 0) {
-        messageBuffer message;
+        messageBuffer recieveBuffer;
+        messageBuffer *messagePointer = &recieveBuffer;
+
+        struct msqid_ds descriptor;
+        struct msqid_ds *buffer = &descriptor;
+        int messageID;
+        int messageFlag = 0;
+        int messageReturn;
+        int messageLength = 20;
+        int messageType = 0;
+        
+        messageID = msgget(key, 0);
+
+        messageReturn = msgctl(messageID, IPC_STAT, buffer);
+        printf("Az uzenetek szama: %ld\n",buffer->msg_qnum);
+
+        
+        while (buffer->msg_qnum) {
+            messageReturn = msgrcv(messageID, (messageBuffer*)messagePointer, messageLength, messageType, messageFlag);
+            printf("Kapott uzenet: %s\n", messagePointer->mtext);
+            messageReturn = msgctl(messageID, IPC_STAT, buffer);
+        }
+
+    } else {
+        messageBuffer sendBuffer;
         messageBuffer *messagePointer;
-        
-        messagePointer = &message;
-        messagePointer->mtype = 1; // csak irunk
-        
-        int messageID = msgget(key, IPC_CREAT | 0666);
+
+        int messageID;
+        int messageFlag;
+        int messageReturn;
+        int messageLength;
+        //letrehozashoz flagek
+        messageFlag = 0666 | IPC_CREAT;
+        messageID = msgget(key, messageFlag);
         if (messageID == -1) {
             perror("Nem sikerult letrehozni\n");
             exit(-1);
         }
 
-        int messageReturn;
-        int messageLen;
-        char *messages[] = {"elso uzenet", "masodik uzenet", "harmadik uzenet"};
-
+        messagePointer = &sendBuffer;
+        messagePointer->mtype = 1;
+        char *messages[] = {"elso", "masodik", "harmadik"};
+        
         for (int i = 0; i < 3; i++) {
             strcpy(messagePointer->mtext, messages[i]);
-            messageLen = strlen(messagePointer->mtext) + 1;
+            messageLength = strlen(messagePointer->mtext) + 1;
 
-            messageReturn = msgsnd(messageID, messagePointer, messageLen, IPC_CREAT | 0666);
+            messageReturn = msgsnd(messageID, (messageBuffer*)messagePointer, messageLength, messageFlag);
             if (messageReturn == -1) {
                 perror("Nem sikerult kuldeni\n");
                 exit(-1);
             }
-
-            printf("Gyerek kuldte : %s\n", messagePointer->mtext);
         }
         
-        exit(0);
-    } else {
-        struct msqid_ds desciptor;
-        struct msqid_ds *buffer;
-        messageBuffer recieveMessage;
-        messageBuffer *messagePointer;
-        messagePointer = &recieveMessage;
-        buffer = &desciptor;
-
-        int messageFlag = 0666 | IPC_CREAT | MSG_NOERROR;
-        int messageLen = 20;
-        int messageType = 0;
-        int messageReturn;
-        int messageID = msgget(key, IPC_CREAT | 0666);
-
-        if (messageID == -1) {
-            perror("Nem sikerult letrehozni\n");
-            exit(-1);
-        }
-
-        messageReturn = msgctl(messageID, IPC_STAT, buffer);
-        if (messageReturn == -1) {
-            perror("Nem sikerult megkapni az uzenetet\n");
-            exit(-1);
-        }
-
-        while (buffer->msg_qnum) {
-            messageReturn = msgrcv(messageID, messagePointer, messageLen, messageType, messageFlag);
-            if (messageReturn == -1) {
-                perror("\nNem sikerult olvasni\n");
-                exit(-1);
-            }
-
-            printf("Olvasott uzenet : %s", messagePointer->mtext);
-        }
-    }
-
-    int messageID = msgget(key, IPC_CREAT | 0666);
-    int messageReturn = msgctl(messageID, IPC_RMID, NULL);
-    if (messageID == -1) {
-        perror("Nem sikerult kitorolni \n");
-        exit(-1);
+        printf("Kuldve!!\n");        
     }
     
 }
