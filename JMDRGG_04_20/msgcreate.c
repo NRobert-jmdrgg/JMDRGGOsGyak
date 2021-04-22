@@ -8,47 +8,40 @@
 
 #define KEY 123456L
 
-typedef struct msgbuf {
+typedef struct msgbuf1 {
     long mtype;      //message type
     char mtext[256]; //uzenet hossza legyen 256 byte
 } messageBuffer;
 
-
-
 void main() {
+    messageBuffer sendBuffer;
+    messageBuffer *messagePointer;
+
     key_t key = KEY;
-    int messageId = msgget(key, IPC_CREAT | 0666);
-    if (messageId == -1) {
-        perror("\n Nem jott letre message queue!!\n");
+    int messageID;
+    int messageFlag;
+    int messageReturn;
+    int messageLength;
+
+    //letrehozashoz flagek
+    messageFlag = 0666 | IPC_CREAT;
+    messageID = msgget(key, messageFlag);
+    if (messageID == -1) {
+        perror("Nem sikerult letrehozni\n");
         exit(-1);
     }
-    printf("\nA letrehozott uzenetros idje : %d\n", messageId);
-    
-    messageBuffer message;
-    messageBuffer *messagePointer = &message;
 
-    messagePointer->mtype = 1;    //a kérés típusa 1
-    strcpy(messagePointer->mtext, "Ez az elso uzenet");
-    int messageLen = strlen(messagePointer->mtext) + 1;
+    messagePointer = &sendBuffer;
+    messagePointer->mtype = 1;
+    strcpy(messagePointer->mtext, "Uzenetem");
+    messageLength = strlen(messagePointer->mtext) + 1;
 
-    int messageReturn = msgsnd(messageId, messagePointer, messageLen, 0666 | IPC_CREAT);
+    messageReturn = msgsnd(messageID, (messageBuffer*)messagePointer, messageLength, messageFlag);
     if (messageReturn == -1) {
-        perror("\nNem sikerult kuldeni!!\n");
+        perror("Nem sikerult kuldeni\n");
         exit(-1);
     }
 
-    printf("Elkuldott uzenet: %s hossza : %d\n", messagePointer->mtext, messageLen);
+    printf("Kuldve!!\n");
 
-    strcpy(messagePointer->mtext, "Ez a masodik uzenet");
-    messageLen = strlen(messagePointer->mtext) + 1;
-
-    messageReturn = msgsnd(messageId, messagePointer, messageLen, 0666 | IPC_CREAT);
-    if (messageReturn == -1) {
-        perror("\nNem sikerult kuldeni!!\n");
-        exit(-1);
-    }
-
-    printf("Elkuldott uzenet: %s hossza : %d\n", messagePointer->mtext, messageLen);
-
-    printf("Sikeres üzenetküldések !!\n");
-}   
+}

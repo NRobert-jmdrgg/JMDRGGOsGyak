@@ -5,51 +5,39 @@
 #include <sys/msg.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 
 #define KEY 123456L
 
-typedef struct msgbuf {
+typedef struct msgbuf1 {
     long mtype;      //message type
     char mtext[256]; //uzenet hossza legyen 256 byte
 } messageBuffer;
 
 void main() {
-    key_t key = KEY;
-
     messageBuffer recieveBuffer;
-    messageBuffer *messagePointer;
-    messagePointer = &recieveBuffer;
+    messageBuffer *messagePointer = &recieveBuffer;
 
+    struct msqid_ds descriptor;
+    struct msqid_ds *buffer = &descriptor;
 
-    int messageFlag = 0666 | IPC_CREAT | MSG_NOERROR;
+    key_t key = KEY;
+    int messageID;
+    int messageFlag = 0;
+    int messageReturn;
+    int messageLength = 20;
+    int messageType = 0;
+    
+    messageID = msgget(key, 0);
 
-    int messageID = msgget(key, messageFlag);
-    if (messageID == -1) {
-        perror("Nem sikerult letrehozni\n");
-        exit(-1);
-    }
-    printf("Letrejott uzenet %d\n", messageID);
+    messageReturn = msgctl(messageID, IPC_STAT, buffer);
+	printf("Az uzenetek szama: %ld\n",buffer->msg_qnum);
 
-    struct msqid_ds descriptor, *buffer;
-
-    buffer = &descriptor;
-    int messageLen = 20;
-    int messageType = 0; //minden tipus lehet
-    int messageReturn = msgctl(messageID, IPC_STAT, buffer);
-    if (messageReturn == -1) {
-        perror("Nem sikerult megkapni az uzenetet\n");
-        exit(-1);
-    }
-
-    printf("A megkapott üzenetek szama: %ld", buffer->msg_qnum);
-
+	
     while (buffer->msg_qnum) {
-        messageReturn = msgrcv(messageID, messagePointer, messageLen, messageType, messageFlag);
-        if (messageReturn == -1) {
-            perror("Nem sikerult megkapni az uzenetet\n");
-            exit(-1);
-        }
+        messageReturn = msgrcv(messageID, (messageBuffer*)messagePointer, messageLength, messageType, messageFlag);
+        printf("Kapott uzenet: %s\n", messagePointer->mtext);
+        messageReturn = msgctl(messageID, IPC_STAT, buffer);
+    }
 
-        printf("Megkapott uzenet : %s", messagePointer->mtext);
-    }   
 }
