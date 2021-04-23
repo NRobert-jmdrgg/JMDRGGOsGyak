@@ -29,12 +29,14 @@ void main() {
             printf("Process 2 olvas\n");
             int sharedMemoryId = shmget(KEY, 0, 0);
             char *s = shmat(sharedMemoryId, NULL, SHM_RND);
-            strlen(s) > 0 ? printf("%s\n", s) : printf("Nincs benne szoveg\n");
+            strlen(s) > 0 ? printf("osztott memoriaban szereplo szoveg : %s\n", s) : printf("Nincs benne szoveg\n");
             //beleirunk
             strcpy(s, "Ez egy uj szoveg");
+            printf("process2 kuldte az uzenetet\n");
         } else {
             process3 = fork();
             if (process3 == 0) {
+                printf("process3: \n");
                 int sharedMemoryId = shmget(KEY, 0, 0);
                 struct shmid_ds buffer;
                 if (shmctl(sharedMemoryId, IPC_STAT, &buffer) == -1) {
