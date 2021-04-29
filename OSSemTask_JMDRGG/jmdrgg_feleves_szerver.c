@@ -47,13 +47,14 @@ void olvasMajdVisszair(int fd) {
     int val = 0;
 
     printf("szerver olvas..\n");
-    if (read(fd, &val, sizeof(val)) > 0) {
-        printf("szerver megkapta : %d \n", val);
-    } else {
+    if (read(fd, &val, sizeof(val)) < 0) {
         perror("Szerver : nem sikerult olvasni\n");
         exit(-1);
-    }
+    }    
+
+    printf("szerver megkapta : %d \n", val);
     val *= 2;
+    
     if (write(fd, &val, sizeof(val)) < 0) {    
         perror("Szerver(2) : nem sikerult irni\n");
         exit(-1);
