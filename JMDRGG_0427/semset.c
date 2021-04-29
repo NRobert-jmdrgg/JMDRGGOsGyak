@@ -24,14 +24,14 @@ void main() {
         exit(-1);
     }
     
-    arg.val = 0;
+    arg.array = (short *)calloc(n, sizeof(int));
 
-    for (int i = 0; i < n; i++) {
-        if (semctl(semID, i, SETVAL, arg)) {
-            perror("Nem sikerult beallitani az erteket\n");
-            exit(-1);
-        }
+
+    if (semctl(semID, 0, SETALL, arg)) {
+        perror("Nem sikerult beallitani az erteket\n");
+        exit(-1);
     }
 
-    printf("%d", arg.val);
+
+    
 }
