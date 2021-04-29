@@ -20,25 +20,17 @@ void main() {
     union semun arg;
     
     int semID = semget(KEY, 0, 0);
-    int x;
     if (errno == ENOENT) {
-        int semID = semget(KEY, 1, IPC_CREAT | 0666);
-        if (semID == -1) {
-            perror("Nem sikerult letrehozni\n");
-            exit(-1);
-        }
-
-        printf("szam : ");
-        scanf("%d", &x);
-        arg.val = x;
-
-        semctl(semID, 0, SETVAL, arg);
-    } else {
         arg.val = 1;
-        semctl(semID, 0, SETVAL, arg);
+    } else {
+        semID = semget(KEY, 1, IPC_CREAT | 0666);
+        printf("Szam: ");
+        scanf("%d" ,&(arg.val));    
     }
 
     
+    semctl(semID, 0, SETVAL, arg);
 
-        
+    printf("A szemafor értéke (1) : %d\n", semctl(semID, 0, GETVAL));    
+    
 }
