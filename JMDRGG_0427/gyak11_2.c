@@ -21,11 +21,12 @@ void main() {
     
     int semID = semget(KEY, 0, 0);
     if (errno == ENOENT) {
-        arg.val = 1;
-    } else {
         semID = semget(KEY, 1, IPC_CREAT | 0666);
         printf("Szam: ");
         scanf("%d" ,&(arg.val));    
+    
+    } else {
+        arg.val = 1;
     }
 
     
