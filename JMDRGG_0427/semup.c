@@ -14,18 +14,12 @@ void main() {
     }
 
     struct sembuf buffer;
-    struct sembuf *op;
 
-    int n = 5;
+    buffer.sem_num = 4;     //a 4.ik szemafort
+    buffer.sem_op = 1;      //inkrementaljuk a szemaforokat
+    buffer.sem_flg = 0666;  //jogok
 
-    int numberOfOperations = 1;
-    buffer.sem_flg = 0666;
-    buffer.sem_num = 0;
-    buffer.sem_op = 1;
-
-    op = &buffer;
-
-    if (semop(semID, op, numberOfOperations) != 0) {
+    if (semop(semID, &buffer, 1)) {
         perror("Sikertelen\n");
         exit(-1);
     }
