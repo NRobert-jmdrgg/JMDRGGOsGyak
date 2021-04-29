@@ -28,7 +28,7 @@ void main() {
     
     int fd = open(CSONEV, O_RDWR);
     if (fd == -1) {
-        perror("Szerver : nem sikerult megnyitni \n");
+        perror("kliens : nem sikerult megnyitni \n");
         exit(-1);
     }
     

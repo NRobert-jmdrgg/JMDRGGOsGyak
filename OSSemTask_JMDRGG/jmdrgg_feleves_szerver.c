@@ -55,7 +55,7 @@ void olvasMajdVisszair(int fd) {
     }
     val *= 2;
     if (write(fd, &val, sizeof(val)) < 0) {    
-        perror("Szerver(2) : nem sikerult olvasni\n");
+        perror("Szerver(2) : nem sikerult irni\n");
         exit(-1);
     }    
 }
