@@ -17,5 +17,12 @@ void main() {
         exit(-1);
     }
 
-    semctl(semID, 0, IPC_RMID);
+    if (semctl(semID, 0, IPC_RMID) == -1) {
+        perror("Nem sikerult torolni\n");
+        exit(-1);
+    }
+
+    printf("Torolve\n");
+
+
 }

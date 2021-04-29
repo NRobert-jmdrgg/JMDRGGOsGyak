@@ -23,10 +23,13 @@ void main() {
     }
 
     //belepesi szakasz
+    printf("Kritikus szakasz\n");
     down(semID);
     sleep(3);
     printf("pid : %d\n", getpid());
+    printf("%d \n", semctl(semID, 0, GETVAL));
     up(semID);
+    printf("kritikus szakasz vege\n");
 }
 
 
